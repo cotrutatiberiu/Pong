@@ -27,9 +27,21 @@ window.onload = function() {
     paddle1Y = mousePos.y - PaddleHeight / 2;
   });
 
+  canvas.addEventListener("mousedown", handleMouseClick);
+
   setInterval(callBoth, 1000 / framePerSecond);
 };
 
+//Click to continue
+function handleMouseClick() {
+  if (showingWinScreen) {
+    //Resets score
+    player1Score = 0;
+    player2Score = 0;
+    //Returns to the game
+    showingWinScreen = false;
+  }
+}
 
 //Retrieve user mouse X,Y
 function calculateMousePos() {
@@ -48,8 +60,6 @@ function ballReset() {
   ballY = canvas.height / 2;
   ballSpeedY = 5;
   if (player1Score >= WiningScore || player2Score >= WiningScore) {
-    player1Score = 0;
-    player2Score = 0;
     showingWinScreen = true;
   }
 }
@@ -113,6 +123,10 @@ function moveEverything() {
       ballReset();
     } else {
       ballSpeedX = -ballSpeedX;
+
+      //Vertical speed depending how far from the center you are hiting
+      var deltaY = ballY - (paddle2Y + PaddleHeight / 2);
+      ballSpeedY = deltaY * 0.35;
     }
   }
   if (ballX < 0) {
@@ -121,9 +135,11 @@ function moveEverything() {
       ballReset();
     } else {
       ballSpeedX = -ballSpeedX;
+      
+      //Vertical speed depending how far from the center you are hiting
+      var deltaY = ballY - (paddle1Y + PaddleHeight / 2);
+      ballSpeedY = deltaY * 0.35;
     }
-    var deltaY = ballY - (paddle1Y + PaddleHeight / 2);
-    ballSpeedY = deltaY * 0.1;
   }
 
   //Move ball on Y

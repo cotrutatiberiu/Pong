@@ -43,40 +43,10 @@ function handleMouseClick() {
   }
 }
 
-//Retrieve user mouse X,Y
-function calculateMousePos() {
-  var x = event.clientX;
-  var y = event.clientY;
-  return {
-    x,
-    y
-  };
-}
-
-//Resets Ball
-function ballReset() {
-  ballSpeedX = -ballSpeedX;
-  ballX = canvas.width / 2;
-  ballY = canvas.height / 2;
-  ballSpeedY = 5;
-  if (player1Score >= WiningScore || player2Score >= WiningScore) {
-    showingWinScreen = true;
-  }
-}
-
 //Calls Draw&Move functions
 function callBoth() {
   drawEverything();
   moveEverything();
-}
-
-function computerMovement() {
-  var paddle2YCenter = paddle2Y + PaddleHeight / 2;
-  if (ballY > paddle2YCenter + 35) {
-    paddle2Y += 5;
-  } else if (ballY < paddle2YCenter) {
-    paddle2Y -= 5;
-  }
 }
 
 //Draws Objects
@@ -84,13 +54,16 @@ function drawEverything() {
   //background
   colorRect(0, 0, canvas.width, canvas.height, "black");
 
+  //net
+  drawNet();
+
   //Bails out of the function!
   //If its after background,the background remains!
   if (showingWinScreen) {
     winingLog();
+    drawNet();
     return;
   }
-
   //player paddle
   colorRect(0, paddle1Y, PaddleThickness, PaddleHeight, "white");
   //computer paddle
@@ -105,51 +78,8 @@ function drawEverything() {
   colorCircle(ballX, ballY, 10, "red");
 
   displayScore();
-}
 
-//Move animation
-function moveEverything() {
-  //Bails out of the function!
-  if (showingWinScreen) {
-    return;
-  }
-
-  computerMovement();
-  //Move ball on X
-  ballX = ballX + ballSpeedX;
-  if (ballX > canvas.width) {
-    if (ballY < paddle2Y || ballY > paddle2Y + PaddleHeight) {
-      player1Score++; // must be before reset
-      ballReset();
-    } else {
-      ballSpeedX = -ballSpeedX;
-
-      //Vertical speed depending how far from the center you are hiting
-      var deltaY = ballY - (paddle2Y + PaddleHeight / 2);
-      ballSpeedY = deltaY * 0.35;
-    }
-  }
-  if (ballX < 0) {
-    if (ballY < paddle1Y || ballY > paddle1Y + PaddleHeight) {
-      player2Score++; // must be before reset
-      ballReset();
-    } else {
-      ballSpeedX = -ballSpeedX;
-      
-      //Vertical speed depending how far from the center you are hiting
-      var deltaY = ballY - (paddle1Y + PaddleHeight / 2);
-      ballSpeedY = deltaY * 0.35;
-    }
-  }
-
-  //Move ball on Y
-  ballY = ballY + ballSpeedY;
-  if (ballY > canvas.height) {
-    ballSpeedY = -ballSpeedY;
-  }
-  if (ballY < 0) {
-    ballSpeedY = -ballSpeedY;
-  }
+  
 }
 
 //Object constructor
@@ -174,6 +104,100 @@ function displayScore() {
 }
 
 function winingLog() {
-  ctx.fillStyle = "orange";
-  ctx.fillText("Click to continue!", 100, 100);
+  switch (WiningScore) {
+    case player1Score:
+      ctx.fillStyle = "red";
+      ctx.fillText("Player won!", 100, 100);
+      ctx.fillStyle = "orange";
+      ctx.fillText("Press click to continue.", 100, 200);
+      break;
+    case player2Score:
+      ctx.fillStyle = "red";
+      ctx.fillText("Computer won!", canvas.width - 400, 100);
+      ctx.fillStyle = "orange";
+      ctx.fillText("Press click to continue.", canvas.width - 400, 200);
+      break;
+  }
+}
+
+function drawNet(){
+  for(var i=0;i<canvas.height;i+=40){
+    colorRect(canvas.width/2-1,i,2,20,"white");
+  }
+}
+
+//Move animation
+function moveEverything() {
+  //Bails out of the function!
+  if (showingWinScreen) {
+    return;
+  }
+
+  //computerMovement();
+  //Move ball on X
+  ballX = ballX + ballSpeedX;
+  if (ballX > canvas.width) {
+    if (ballY < paddle2Y || ballY > paddle2Y + PaddleHeight) {
+      player1Score++; // must be before reset
+      ballReset();
+    } else {
+      ballSpeedX = -ballSpeedX;
+
+      //Vertical speed depending how far from the center you are hiting
+      var deltaY = ballY - (paddle2Y + PaddleHeight / 2);
+      ballSpeedY = deltaY * 0.35;
+    }
+  }
+  if (ballX < 0) {
+    if (ballY < paddle1Y || ballY > paddle1Y + PaddleHeight) {
+      player2Score++; // must be before reset
+      ballReset();
+    } else {
+      ballSpeedX = -ballSpeedX;
+
+      //Vertical speed depending how far from the center you are hiting
+      var deltaY = ballY - (paddle1Y + PaddleHeight / 2);
+      ballSpeedY = deltaY * 0.35;
+    }
+  }
+
+  //Move ball on Y
+  ballY = ballY + ballSpeedY;
+  if (ballY > canvas.height) {
+    ballSpeedY = -ballSpeedY;
+  }
+  if (ballY < 0) {
+    ballSpeedY = -ballSpeedY;
+  }
+}
+
+//A.I.
+function computerMovement() {
+  var paddle2YCenter = paddle2Y + PaddleHeight / 2;
+  if (ballY > paddle2YCenter + 35) {
+    paddle2Y += 5;
+  } else if (ballY < paddle2YCenter) {
+    paddle2Y -= 5;
+  }
+}
+
+//Retrieve user mouse X,Y
+function calculateMousePos() {
+  var x = event.clientX;
+  var y = event.clientY;
+  return {
+    x,
+    y
+  };
+}
+
+//Resets Ball
+function ballReset() {
+  ballSpeedX = -ballSpeedX;
+  ballX = canvas.width / 2;
+  ballY = canvas.height / 2;
+  ballSpeedY = 5;
+  if (player1Score >= WiningScore || player2Score >= WiningScore) {
+    showingWinScreen = true;
+  }
 }

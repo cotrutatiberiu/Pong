@@ -133,7 +133,7 @@ function moveEverything() {
     return;
   }
 
-  //computerMovement();
+  computerMovement();
   //Move ball on X
   ballX = ballX + ballSpeedX;
   if (ballX > canvas.width) {
